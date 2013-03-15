@@ -1,0 +1,9 @@
+ul#cases_by_type
+  each cases,type in cases_by_type
+    - console.log('type',type);
+    li.type
+      h2= type
+      ul.cases
+        each c in cases
+          li.case
+            a(href="https://na15.salesforce.com/#{c.Id}")= c.Id

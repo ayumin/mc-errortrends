@@ -2,6 +2,7 @@ async      = require("async")
 coffee     = require("coffee-script")
 express    = require("express")
 log        = require("./lib/logger").init("mc.errortrends")
+redis      = require("redis-url").connect(process.env.OPENREDIS_URL)
 salesforce = require("node-salesforce")
 
 delay = (ms, cb) -> setTimeout  cb, ms
@@ -33,6 +34,34 @@ crm = (query, cb) ->
   sf.login process.env.SALESFORCE_USERNAME, process.env.SALESFORCE_PASSWORD, (err, sub) ->
     sf.query query, cb
 
+chatter = (message, cb) ->
+  sf = new salesforce.Connection()
+  sf.login process.env.SALESFORCE_USERNAME, process.env.SALESFORCE_PASSWORD, (err, sub) ->
+    body =
+      messageSegments: [
+        type: "Text"
+        text: message
+      ]
+    sf._request
+      method: "POST"
+      url: sf.urls.rest.base + "/chatter/feeds/record/#{process.env.CHATTER_GROUP_ID}/feed-items"
+      body: JSON.stringify(body:body)
+      headers:
+        "Content-Type": "application/json"
+      (err, data) ->
+        console.log "err", err
+        console.log "data", data
+        cb() if cb
+
+alert_chatter = () ->
+  redis.setnx "chatter.lock", "locked", (err, success) ->
+    unless success is 1
+      console.log "already locked"
+      return
+    redis.expire "chatter.lock", 600, (err, success) ->
+      if success is 1
+        chatter "posting"
+
 cols = (name, cb) ->
   sf = new salesforce.Connection()
   sf.login process.env.SALESFORCE_USERNAME, process.env.SALESFORCE_PASSWORD, (err, sub) ->
@@ -40,15 +69,18 @@ cols = (name, cb) ->
       console.log field.name for field in meta.fields
       cb()
 
-app.get "/", (req, res) ->
+app.get "/check", (req, res) ->
   crm "SELECT Id,Type,CreatedDate FROM Case", (err, rows) ->
+    console.log "err", err
     cases_by_type = rows.records.reduce (ax, c) ->
       created = Date.parse(c.CreatedDate)
-      if true || created > ((new Date()).getTime() - 5*60*1000)
+      if created > ((new Date()).getTime() - parseInt(process.env.CASE_TIME_THRESHOLD || "300")*1000)
         ax[c.Type] ||= []
         ax[c.Type].push(c)
       ax
     ,{}
+    if (cases_by_type["Electrical"] || []).length > parseInt(process.env.CASE_COUNT_THRESHOLD || "5")
+      alert_chatter()
     res.render "cases.jade", cases_by_type:cases_by_type
 
 app.listen (process.env.PORT || 5000)

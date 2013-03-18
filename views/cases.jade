@@ -7,3 +7,4 @@ ul#cases_by_type
         each c in cases
           li.case
             a(href="https://na15.salesforce.com/#{c.Id}")= c.Id
+            = c.CreatedDate

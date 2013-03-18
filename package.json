@@ -9,7 +9,8 @@
     "jade":            "0.28.x",
     "nodemon":         "0.7.x",
     "node-salesforce": "0.5.x",
-    "node-uuid":       "1.4.x"
+    "node-uuid":       "1.4.x",
+    "redis-url":       "0.1.x"
   },
 
   "engines": {

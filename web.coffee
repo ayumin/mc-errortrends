@@ -60,7 +60,7 @@ alert_chatter = () ->
       return
     redis.expire "chatter.lock", 600, (err, success) ->
       if success is 1
-        chatter "Alert! We are experiencing a high number of service requests reporting Error Code 42 (Broken LED). Please investigate possible product design defect."
+        chatter "Alert! We are experiencing a high number of service requests reporting Error Code 42 (Sensor Failed). Please investigate possible product design defect."
 
 cols = (name, cb) ->
   sf = new salesforce.Connection()

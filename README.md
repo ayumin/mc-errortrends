@@ -1,9 +1,8 @@
 # Machine Cloud Error Trends
 
-This app implements a simple workflow for automatically creating service requests in Service Cloud and escalating issues to Salesforce Chatter. Specifically the following behavior is implemented:
+This app implements a simple workflow for monitoring Service Cloud for `CASE_COUNT_THRESHOLD` occurrences of `CASE_TYPE` within `CASE_TIME_THRESHOLD` and posts to `CHATTER_GROUP_ID` via the Force.com REST API when conditions are met.
 
-* Watches the logplex event stream for device failures of the specified `CASE_TYPE` and creates case using the Force.com REST API. 
-* Watches Service Cloud for `CASE_COUNT_THRESHOLD` occurrences of `CASE_TYPE` within `CASE_TIME_THRESHOLD` and posts to `CHATTER_GROUP_ID` via the Force.com REST API
+* Watches 
 
 ## ENV Vars
 

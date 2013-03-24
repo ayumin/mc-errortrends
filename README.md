@@ -1,8 +1,7 @@
 # Machine Cloud Error Trends
 
 This app implements a simple workflow for monitoring Service Cloud for `CASE_COUNT_THRESHOLD` occurrences of `CASE_TYPE` within `CASE_TIME_THRESHOLD` and posts to `CHATTER_GROUP_ID` via the Force.com REST API when conditions are met.
-
-* Watches 
+ 
 
 ## ENV Vars
 

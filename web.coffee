@@ -84,6 +84,7 @@ app.get "/check", (req, res) ->
     res.render "cases.jade", cases_by_type:cases_by_type
 
 app.get "/escalate", (req, res) ->
-  chatter "Alert! We are experiencing a high number of service requests reporting Error Code 42 (Sensor Failed). Please investigate possible product design defect."
+  chatter "Alert! We are experiencing a high number of service requests reporting Error Code 42 (Sensor Failed). Please investigate possible product design defect.", ->
+    res.send "ok"
 
 app.listen (process.env.PORT || 5000)
